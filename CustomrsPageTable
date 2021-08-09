@@ -1,0 +1,234 @@
+<script>
+let HideColumnAray =[
+        {
+            id:0,
+            name:"ID",
+            alias:"ID",
+            visible:true
+        },
+        {
+            id:1,
+            name:"REFERENCE_ID",
+            alias:"REFERENCE ID",
+            visible:false
+        },
+        {
+            id:2,
+            name:"CUSTOMER_NAME",
+            alias:"CUSTOMER NAME",
+            visible:true
+        },
+        {
+            id:3,
+            name:"CUSTOMER_DESCRIPTION",
+            alias:"CUSTOMER DESCRIPTION",
+            visible:false
+        },
+        {
+            id:4,
+            name:"BILLING_ADDRESS",
+            alias:"BILLING ADDRESS",
+            visible:true
+        },
+        {
+            id:5,
+            name:"PRIMARY_CONTACT",
+            alias:"PRIMARY CONTACT",
+            visible:false
+        },
+        {
+            id:6,
+            name:"CUSTOMER_FIELD_C",
+            alias:"CUSTOMER FIELD C",
+            visible:true
+        },
+        {
+            id:7,
+            name:"CUSTOMER_FIELD_C2",
+            alias:"CUSTOMER FIELD C2",
+            visible:false
+        },
+        {
+            id:8,
+            name:"CUSTOMER_FIELD_C3",
+            alias:"CUSTOMER FIELD C3",
+            visible:true
+        },
+        {
+            id:9,
+            name:"CUSTOMER_FIELD_C4",
+            alias:"CUSTOMER FIELD C4",
+            visible:false
+        },
+        {
+            id:10,
+            name:"CUSTOMER_FIELD_C5",
+            alias:"CUSTOMER FIELD C5",
+            visible:true
+        },
+        {
+            id:11,
+            name:"CUSTOMER FIELD C6",
+            alias:"CUSTOMER FIELD C6",
+            visible:false
+        },
+        
+        {
+            id:12,
+            name:"CUSTOMER_FIELD_C7",
+            alias:"CUSTOMER FIELD C7",
+            visible:false
+        },
+        {
+            id:13,
+            name:"CUSTOMER_FIELD_C8",
+            alias:"CUSTOMER FIELD C8",
+            visible:true
+        },
+        {
+            id:14,
+            name:"SIMS_COUNT",
+            alias:"SIMS COUNT",
+            visible:false
+        },
+        {
+            id:15,
+            name:"ALLOCATED_SIMS",
+            alias:"ALLOCATED SIMS",
+            visible:true
+        },
+        {
+            id:16,
+            name:"ACTIVE_SIMS",
+            alias:"ACTIVE SIMS",
+            visible:false
+        },
+        {
+            id:17,
+            name:"CUSTOMER_FIELD_C5",
+            alias:"CUSTOMER FIELD C5",
+            visible:true
+        },
+        {
+            id:18,
+            name:"OBLIGO",
+            alias:"OBLIGO",
+            visible:false
+        },
+        {
+            id:19,
+            name:"CURRENT_OBLIGO_BALLANCE",
+            alias:"CURRENT OBLIGO BALLANCE",
+            visible:false
+        }
+    ]
+
+    let ColumnsAray = [] ;
+    let RowsAray = [] ;
+    let stringtitle =0;
+    let RowData = [];
+    let table2 =0;
+    let table =0;
+    let specid =0;
+    let RowDataAray = [ ];
+    let  columns = [];
+    let  columns2 = [];
+    let flag = 1;
+    let lastrow = -1 ;
+    let row =0;
+    let ColumnsInvocieDetailsAray = [];
+    let RowDetailsData = [];
+    let RowDetailDataAray = [];
+
+    $(document).ready(function() {
+        $('.loading-overlay').show();
+        loadAdminCustomers2();
+        });
+    function loadAdminCustomers2(){
+        execGenericApi("GetCustomersList",[user_group_id],function(data){
+            console.log(data);
+            TableGetConfig(data);
+            $('.loading-overlay').hide();
+        });
+    }
+    
+    function TableGetConfig(data){
+        //get and push the title for columns 
+        data.columnList.forEach(element => {
+            let columntitle = element.replaceAll("_", " ");
+            ColumnsAray.push(columntitle);       
+        });
+        //create aray of the data for the row and push it 
+        data.data.forEach(element => {
+            data.columnList.forEach(column => {
+                RowsAray.push(  
+                    element[column]  
+                );
+            });
+            RowData.push(RowsAray); 
+            RowsAray=[];          
+        }); 
+        //get  push the title for columns
+        ColumnsAray.forEach((element)  => {  
+            columns.push({title:element}); 
+        });
+        //get and push the data
+        RowData.forEach(element =>{
+            RowDataAray.push(element)
+        });
+        create_Dtable(columns , RowDataAray , "CustomersList");
+        columnList = [];
+        ColumnsAray=[];
+        columns=[];
+        RowDataAray=[];
+        RowData=[];
+}
+
+function create_Dtable(columns , data , id ){
+    //crerate the html
+    $("#CustomerTable").append(" <div class='divtable'><table  class='display table table-striped table-bordered ' cellspacing='0' width='100%' height='1000px'></table> </div></div>");
+    $(".divtable").children().attr('id' , id);
+    //$(".dataTables_scrollBody").css('height' , '1000px');
+    table = $('#' + id).DataTable( {
+        searching: true,
+        dom: "Bfrtip",
+        columns: columns,
+        data: data,
+        //give id for the tr
+        "fnCreatedRow": function( nRow, aData, iDataIndex ) {
+            iDataIndex=0;
+            $(nRow).attr('id', 'tr-' + iDataIndex);
+            iDataIndex++;
+        },
+        paging: false,
+        columnDefs: [
+           
+        ],
+        buttons: [],
+        fixedColumns: true
+    });
+    var tbl = $('#CustomersList');
+    console.log(HideColumnAray);
+    HideColumnAray.forEach(element=>{
+        tbl.DataTable().columns(element.id).visible(element.visible); 
+    });
+}
+
+</script>
+<section class="admin-page">
+    <section class="top-admin-pages">
+        <ol class="breadcrumbs">
+            <li>
+                <a onclick='loadSelectedPage("admin")'>Admin</a>
+            </li>
+            <li>
+                <b>Customers2</b>
+            </li>
+        </ol>
+    </section>
+    <figure class="card">
+        <main class="admin-topic-content customers" id="CustomerTable">
+                
+        </main>
+    </figure>
+</section>
